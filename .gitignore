@@ -1,0 +1,42 @@
+# ==========================================
+# Packer
+# ==========================================
+.packer/
+**/packer_cache/
+*.manifest.json
+
+# ==========================================
+# Terraform
+# ==========================================
+**/.terraform/
+.terraform.tfstate.lock.info
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+*tfplan*
+*.dot
+planout
+
+# ==========================================
+# Credenciais, Chaves e Logs de Sistema
+# ==========================================
+.aws/
+*.pem
+*.key
+*.log
+crash.log
+crash.*.log
+
+# ==========================================
+# Sistema Operacional / IDEs
+# ==========================================
+.DS_Store
+.idea/
+.vscode/

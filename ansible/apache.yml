@@ -1,0 +1,57 @@
+---
+- name: Configurar Servidor Apache com Metadados
+  hosts: default
+
+  # 'sudo' (executa tudo com permissão de administrador)
+  become: true
+
+  tasks:
+
+    # TASK 1: Instalar o servidor web Apache
+
+    - name: Atualizar cache de pacotes e instalar o Apache
+      ansible.builtin.apt:
+        name: apache2
+        state: present             # Garantir que o pacote esteja instalado
+        update_cache: true         # Equivale ao 'apt-get update'
+
+    # TASK 2: Criar a página HTML personalizada
+
+    - name: Criar pagina HTML personalizada com metadados do build
+      ansible.builtin.copy:        # Módulo do Ansible para criar/copiar arquivos
+        dest: /var/www/html/index.html   # Onde o HTML deve ser salvo no Linux
+        content: |
+          <!DOCTYPE html>
+          <html lang="pt-BR">
+          <head>
+              <meta charset="UTF-8">
+              <title>Desafio Packer & Ansible - AWS</title>
+              <style>
+                  body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f6f9; }
+                  .container { background: #fff; padding: 30px; border-radius: 8px; max-width: 600px; margin: auto; }
+                  h1 { color: #232f3e; border-bottom: 2px solid #ff9900; }
+              </style>
+          </head>
+          <body>
+              <div class="container">
+                  <h1>Servidor Apache Provisionado!</h1>
+                  <p>Imagem construida de forma automatizada via Packer + Ansible.</p>
+                  <ul>
+                      <li><strong>Provedor:</strong> AWS</li>
+                      <li><strong>Sistema Operacional:</strong> {{ ansible_distribution }} {{ ansible_distribution_version }}</li>
+                      <li><strong>Data do Build:</strong> {{ ansible_date_time.date }} {{ ansible_date_time.time }} UTC</li>
+                  </ul>
+              </div>
+          </body>
+          </html>
+        owner: www-data            # Define o usuário dono do arquivo (padrão do Apache)
+        group: www-data            # Define o grupo do arquivo
+        mode: '0644'               #Leitura/escrita para o dono e apenas leitura para os outros
+
+    # TASK 3: Garantir que o Apache inicie com a máquina
+
+    - name: Garantir que o servico Apache esteja ativo e habilitado no boot
+      ansible.builtin.systemd:     # Módulo para gerenciar serviços do Linux (systemctl)
+        name: apache2
+        enabled: true              # Habilita o serviço no boot da máquina
+        state: started
